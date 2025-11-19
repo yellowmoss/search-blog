@@ -6,8 +6,11 @@ layout: null
 
 {% assign docs = "" | split: "" %}
 
-{% for collection in site.search_collections %}
-  {% assign docs = docs | concat: site.collections[collection].docs %}
+{% for name in site.search_collections %}
+  {% assign coll = site.collections[name] %}
+  {% if coll and coll.docs %}
+    {% assign docs = docs | concat: coll.docs %}
+  {% endif %}
 {% endfor %}
 
 {%- assign sorted = docs | sort: "tags" | sort: "collection" -%}
