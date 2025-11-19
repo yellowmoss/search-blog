@@ -1,9 +1,0 @@
-title: My Simple Weird Blog
-description: Search blog structure from which to expand and customise 
-markdown: kramdown
-baseurl: "build"
-url: "https://yellowmoss.github.io"
-sass:
-  sass_dir: _sass
-  style: compressed
-
