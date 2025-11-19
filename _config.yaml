@@ -3,6 +3,6 @@ description: Search blog structure from which to expand and customise
 markdown: kramdown
 baseurl: "sblog"
 url: "https://yellowmoss.github.io"
-collections:
-  posts:
-    output: true
+sass:
+  sass_dir: _sass
+  style: compressed
