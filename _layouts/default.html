@@ -3,21 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <title>{{ page.title }}</title>
-  <link rel="stylesheet" href="{{ site.url }}/{{ site.baseurl }}/assets/css/style.css">
+  <link rel="stylesheet" href="{{ site.url }}/{{ site.baseurl }}/_output/style.css">
 </head>
 <body>
-  <header>
-    <h1><a href="{{ site.url }}/{{ site.baseurl }}">{{ site.title }}</a></h1>
-    {% if site.description %}
-      <p>{{ site.description }}</p>
-    {% endif %}
-    <h1><a href="{{ site.url }}/{{ site.baseurl }}/search.html">search</a></h1>
-  </header>
   <main>
     {{ content }}
   </main>
-  <footer>
-    <p>footers</p>
-  </footer>
+  {% include footer.html %}
 </body>
 </html>

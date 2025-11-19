@@ -1,0 +1,18 @@
+---
+siteBackgroundColour: AliceBlue
+borderColour: Gainsboro
+borderWidth: 2px
+pageBackgroundColour: White
+pageFontColour: Black
+pageLinkColour: DarkSlateBlue
+pageFontSize: 12pt
+headerBackgroundColour: ForestGreen
+headerFontColour: CornSilk
+headerLinkColour: LemonChiffon
+headerFontSize: 16pt 
+headerPadding: 20px
+menubarBackgroundColour: PaleGreen
+menubarFontColour: Black
+menubarFontSize: 14pt
+menuBarPadding: 5px
+----
