@@ -6,6 +6,8 @@ body {
   background: {{ site.data.style.background_color }};
   color: {{ site.data.style.text.body }};
   padding: {{ site.data.style.spacing.base }};
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 56px;
 }
 
 /* Headings */
@@ -24,3 +26,5 @@ button {
 a {
   color: {{ site.data.style.primary_color }};
 }
+
+
