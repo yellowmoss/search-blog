@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
    const out = document.getElementById("search-output");
    if (out) {
-      fetch("data/search.json")
+      fetch("search.json")
       .then(response => response.json())
       .then(data => {
          console.log("Search JSON loaded:", data);
