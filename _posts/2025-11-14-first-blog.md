@@ -3,10 +3,7 @@ layout: default
 title: "First Post"
 date: 2025-11-14
 permalink: first-post
-tags:
-   - first
-   - search
-   - jekyll
+tags: [first, search, jekyll]
 ---
 bla bla bla bla this is my first post bla bla 
 

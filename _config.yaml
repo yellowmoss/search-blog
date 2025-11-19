@@ -2,6 +2,19 @@ title: My Simple Weird Blog
 description: Search blog structure from which to expand and customise 
 baseurl: "build"
 url: "https://yellowmoss.github.io"
+
 collections:
-  posts:
-    output: true
+   posts:
+      output: true
+   articles:
+      output: false
+   news:
+      output: false
+   links:
+      output: true
+
+# which collections search.json should index
+search_collections:
+  - posts
+  - articles
+  - news
