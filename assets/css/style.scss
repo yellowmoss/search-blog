@@ -1,0 +1,12 @@
+---
+---
+// Liquid will now be processed in this file!
+{% assign primary_color = site.data.style.colors.primary %}
+
+body {
+    background-color: {{ primary_color }};
+}
+
+.header {
+    font-size: {{ site.data.style.fonts.header_size }};
+}
