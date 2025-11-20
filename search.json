@@ -44,4 +44,4 @@ permalink: /search.json
     {%- endfor %}
   {%- endif %}
 {%- endfor %}
-{{ tag_map | json }}
+{{ tag_map[0] | json }}
