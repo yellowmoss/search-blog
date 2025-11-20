@@ -3,7 +3,7 @@ layout: null
 permalink: /search.json
 ---
 
-{% assign all_tags = "" | split: "" %}
+{%- assign all_tags = "" | split: "" -%}
 
 {% for collection in site.collections %}
   {% for item in collection.docs %}
