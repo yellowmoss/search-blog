@@ -13,4 +13,29 @@ permalink: /search.json
 
 {% assign unique_sorted_tags = all_tags | uniq | sort %}
 
-{{ unique_sorted_tags | json }}
+[
+  {
+    "tag": {{ unique_sorted_tags[0] }}
+  },
+  {
+    "tag": {{ unique_sorted_tags[1] }}
+  },
+  {
+    "tag": {{ unique_sorted_tags[2] }}
+  },
+  {
+    "tag": {{ unique_sorted_tags[3] }}
+  },
+  {
+    "tag": {{ unique_sorted_tags[4] }}
+  },
+  {
+    "tag": {{ unique_sorted_tags[5] }}
+  },
+  {
+    "tag": {{ unique_sorted_tags[6] }}
+  },
+  {
+    "tag": {{ unique_sorted_tags[7] }}
+  }
+]
