@@ -14,10 +14,10 @@ permalink: /search.json
       {%- endif -%}
     {% for tag in page.tags %}
       {
-        "tag": {{ tag }}",
-        "title": "{{ page.title | jsonify }}",
-        "url": "{{ page.url | relative_url | jsonify }}",
-        "description": "{{ page.description | default:page.excerpt | jsonify }}"
+        "tag": "{{ tag }}",
+        "title": {{ page.title | jsonify }},
+        "url": {{ page.url | relative_url | jsonify }},
+        "description": {{ page.description | default:page.excerpt | jsonify }}
       }
     {%- endfor -%}
   {%- endfor -%}
