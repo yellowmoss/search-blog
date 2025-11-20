@@ -4,25 +4,9 @@ layout: null
 
 [
 
-{% assign docs = "" | split: "" %}
-
-{% for name in site.search_collections %}
-  {% assign coll = site.collections[name] %}
-  {% if coll and coll.docs %}
-    {% assign docs = docs | concat: coll.docs %}
-  {% endif %}
-{% endfor %}
-
-{%- assign sorted = docs | sort: "tags" | sort: "collection" -%}
-
-{%- for item in sorted -%}
-
-{
-  "title": {{ item.title | jsonify }},
-  "url": {{ item.url | relative_url | jsonify }},
-  "tags": {{ item.tags | jsonify }},
-  "collection": {{ item.collection | jsonify }},
-  "content": {{ item.content | strip_html | strip_newlines | jsonify }}
-}{% unless forloop.last %},{% endunless %}
+{%- for name in site.collections -%}
+  "title": {{ name }},
+}
 {%- endfor -%}
+
 ]
