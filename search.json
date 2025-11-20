@@ -2,13 +2,22 @@
 layout: null
 ---
 
-
 [
-    {
-        "title": "apple"
-    },
-    {
-        "title": "banana"
-    }
-]
+{% assign docs = "" | split: "" %}
 
+{%- for collection in site.collections -%}
+  {% assign docs = docs | concat: collection.docs %}
+{%- endfor -%}
+
+{%- assign sorted = docs | sort: "tags" -%}
+
+{%- for item in sorted -%}
+{
+  "title": {{ item.title | jsonify }},
+  "url": {{ item.url | relative_url | jsonify }},
+  "tags": {{ item.tags | jsonify }},
+  "collection": {{ item.collection | jsonify }},
+  "content": {{ item.content | strip_html | strip_newlines | jsonify }}
+}{% unless forloop.last %},{% endunless %}
+{%- endfor -%}
+]
