@@ -7,12 +7,12 @@ permalink: /search.json
 {%- assign first = true -%}
 {%- for coll in site.collections -%}
   {%- for page in coll.docs -%}
+    {% for tag in page.tags %}
       {%- if first -%}
         {%- assign first = false -%}
       {%- else -%}
         ,
       {%- endif -%}
-    {% for tag in page.tags %}
       {
         "tag": "{{ tag }}",
         "title": {{ page.title | jsonify }},
