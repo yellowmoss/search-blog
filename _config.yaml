@@ -5,7 +5,7 @@ title: My Simple Weird Blog
 description: Search blog structure from which to expand and customise 
 
 # repository name
-baseurl: "multiblog"
+baseurl: "search-blog"
 
 #
 url: "https://yellowmoss.github.io"
