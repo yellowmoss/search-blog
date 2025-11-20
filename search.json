@@ -20,4 +20,8 @@ layout: null
   {%- endfor -%}
 {%- endfor -%}
 
-[{"title":"banana"},{"species":"giant herb"}]
+[{
+
+{{ tag_index | json }}
+
+}]
