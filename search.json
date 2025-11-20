@@ -3,10 +3,6 @@ layout: none
 permalink: /search.json
 ---
 
-{%- comment -%} 
-Collect all pages from pages, posts, and other collections
-{%- endcomment -%}
-
 {%- assign all_pages = site.pages | concat: site.posts -%}
 {%- for coll in site.collections -%}
   {%- unless coll.label == "posts" -%}
@@ -14,7 +10,6 @@ Collect all pages from pages, posts, and other collections
   {%- endunless -%}
 {%- endfor -%}
 
-{%- comment -%} Collect all tags from all pages {%- endcomment -%}
 {%- assign all_tags = "" | split: "" -%}
 {%- for page in all_pages -%}
   {%- if page.tags -%}
@@ -29,7 +24,6 @@ Collect all pages from pages, posts, and other collections
 
 {%- assign all_tags = all_tags | sort -%}
 
-{%- comment -%} Output JSON {%- endcomment -%}
 {
 {%- assign first_tag = true -%}
 {%- for tag in all_tags -%}
@@ -41,19 +35,27 @@ Collect all pages from pages, posts, and other collections
 
   "{{ tag }}": [
     {%- assign first_page = true -%}
+    {%- assign seen_urls = "" | split: "" -%}
+
     {%- for page in all_pages -%}
       {%- if page.tags contains tag -%}
-        {%- assign title = page.title | jsonify -%}
-        {%- assign url   = page.url | relative_url | jsonify -%}
-        {%- assign date  = page.date | date_to_xmlschema | jsonify -%}
+        {%- assign url = page.url | relative_url -%}
+        {%- unless seen_urls contains url -%}
 
-        {%- if first_page -%}
-          {%- assign first_page = false -%}
-        {%- else -%}
-          ,
-        {%- endif -%}
+          {%- assign title = page.title | jsonify -%}
+          {%- assign url_json = url | jsonify -%}
+          {%- assign date = page.date | date_to_xmlschema | jsonify -%}
 
-        { "title": {{ title }}, "url": {{ url }}, "date": {{ date }} }
+          {%- if first_page -%}
+            {%- assign first_page = false -%}
+          {%- else -%}
+            ,
+          {%- endif -%}
+
+          { "title": {{ title }}, "url": {{ url_json }}, "date": {{ date }} }
+
+          {%- assign seen_urls = seen_urls | push: url -%}
+        {%- endunless -%}
       {%- endif -%}
     {%- endfor -%}
   ]
