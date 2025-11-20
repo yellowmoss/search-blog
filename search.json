@@ -35,29 +35,34 @@ permalink: /search.json
 
   "{{ tag }}": [
     {%- assign first_page = true -%}
-    {%- assign seen_urls_str = "" -%} {# Track duplicates using a delimiter-separated string #}
+    {%- assign seen_urls = "" -%}
 
+    {%- assign tag_pages = "" | split: "" -%}
     {%- for page in all_pages -%}
       {%- if page.tags contains tag -%}
-        {%- assign url = page.url | relative_url -%}
-        {%- assign delimiter = "||" -%}
-        {%- unless seen_urls_str contains delimiter | append: url | append: delimiter -%}
-
-          {%- assign title = page.title | jsonify -%}
-          {%- assign url_json = url | jsonify -%}
-          {%- assign date = page.date | date_to_xmlschema | jsonify -%}
-
-          {%- if first_page -%}
-            {%- assign first_page = false -%}
-          {%- else -%}
-            ,
-          {%- endif -%}
-
-          { "title": {{ title }}, "url": {{ url_json }}, "date": {{ date }} }
-
-          {%- assign seen_urls_str = seen_urls_str | append: delimiter | append: url | append: delimiter -%}
-        {%- endunless -%}
+        {%- assign tag_pages = tag_pages | push: page -%}
       {%- endif -%}
+    {%- endfor -%}
+
+    {%- assign tag_pages = tag_pages | sort: "date" | reverse -%}
+
+    {%- for page in tag_pages -%}
+      {%- assign url = page.url | relative_url -%}
+      {%- unless seen_urls contains "|" | append: url | append: "|" -%}
+        {%- assign title = page.title | jsonify -%}
+        {%- assign url_json = url | jsonify -%}
+        {%- assign date = page.date | date_to_xmlschema | jsonify -%}
+
+        {%- if first_page -%}
+          {%- assign first_page = false -%}
+        {%- else -%}
+          ,
+        {%- endif -%}
+
+        { "title": {{ title }}, "url": {{ url_json }}, "date": {{ date }} }
+
+        {%- assign seen_urls = seen_urls | append: "|" | append: url | append: "|" -%}
+      {%- endunless -%}
     {%- endfor -%}
   ]
 {%- endfor -%}
