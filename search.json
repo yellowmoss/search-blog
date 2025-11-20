@@ -12,6 +12,13 @@ permalink: /search.json
   {%- endunless -%}
 {%- endfor -%}
 
+{{ all_pages | json }}
+
+
+
+
+
+
 {%- for p in all_pages -%}
   {%- if p.tags -%}
 
