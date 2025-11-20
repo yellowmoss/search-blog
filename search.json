@@ -3,39 +3,39 @@ layout: none
 permalink: /search.json
 ---
 
-{%- comment -%}
-dict[tag] = "||" separated list of JSON objects
-tag_keys   = list of tag strings for sorting
-{%- endcomment -%}
-
-{%- assign dict = {} -%}
 {%- assign tag_keys = "" | split: "" -%}
+
+{%- comment -%}
+Use capture to store JSON strings per tag
+{%- endcomment -%}
 
 {%- for coll in site.collections -%}
   {%- for page in coll.docs -%}
     {%- if page.tags -%}
 
       {%- assign title = page.title | jsonify -%}
-      {%- assign url = page.url | relative_url | jsonify -%}
-      {%- assign date = page.date | date_to_xmlschema | jsonify -%}
+      {%- assign url   = page.url | relative_url | jsonify -%}
+      {%- assign date  = page.date | date_to_xmlschema | jsonify -%}
 
-      {%- assign temp = 
-        '{"title":' | append: title |
-        ', "url":'   | append: url |
-        ', "date":'  | append: date |
-        '}'
-      -%}
+      {%- assign temp = '{"title":' | append: title |
+                        ', "url":' | append: url |
+                        ', "date":' | append: date |
+                        '}' -%}
 
       {%- for tag in page.tags -%}
         {%- assign key = tag | downcase -%}
 
-        {%- if dict[key] -%}
-          {%- assign updated = dict[key] | append: "||" | append: temp -%}
-          {%- assign dict = dict | merge: {{ key }}: updated -%}
-        {%- else -%}
-          {%- assign dict = dict | merge: {{ key }}: temp -%}
+        {%- comment -%} Add tag to list if new {%- endcomment -%}
+        {%- unless tag_keys contains key -%}
           {%- assign tag_keys = tag_keys | push: key -%}
-        {%- endif -%}
+        {%- endunless -%}
+
+        {%- comment -%} Capture/accumulate temp JSON for each tag {%- endcomment -%}
+        {%- capture tag_content -%}
+          {{ site[key] | default: "" }}{% unless site[key] == "" %}||{% endunless %}{{ temp }}
+        {%- endcapture -%}
+
+        {%- assign site = site | merge: {{ key }}: tag_content -%}
 
       {%- endfor -%}
 
@@ -43,28 +43,14 @@ tag_keys   = list of tag strings for sorting
   {%- endfor -%}
 {%- endfor -%}
 
-{%- comment -%}
-Sort tags alphabetically
-{%- endcomment -%}
 {%- assign tag_keys = tag_keys | sort -%}
-
-{%- comment -%}
-BEGIN JSON OUTPUT
-{%- endcomment -%}
 
 {
 {%- assign first_tag = true -%}
+
 {%- for tag in tag_keys -%}
-
-  {%- assign raw = dict[tag] -%}
+  {%- assign raw = site[tag] | default: "" -%}
   {%- assign items = raw | split: "||" -%}
-
-  {%- comment -%}
-  Sort pages inside the tag by date (newest first)
-  Liquid can sort JSON-like strings by a subfield:
-  sort: "date" works *only if items are JSON objects*
-  which they are.
-  {%- endcomment -%}
   {%- assign items = items | sort: "date" | reverse -%}
 
   {%- if first_tag -%}
@@ -78,6 +64,5 @@ BEGIN JSON OUTPUT
       {{ item }}{%- unless forloop.last %},{% endunless %}
     {%- endfor -%}
   ]
-
 {%- endfor -%}
 }
