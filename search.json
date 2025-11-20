@@ -44,26 +44,4 @@ permalink: /search.json
       {%- endif -%}
     {%- endfor -%}
 
-    {%- assign tag_pages = tag_pages | sort: "date" | reverse -%}
-
-    {%- for page in tag_pages -%}
-      {%- assign url = page.url | relative_url -%}
-      {%- unless seen_urls contains "|" | append: url | append: "|" -%}
-        {%- assign title = page.title | jsonify -%}
-        {%- assign url_json = url | jsonify -%}
-        {%- assign date = page.date | date_to_xmlschema | jsonify -%}
-
-        {%- if first_page -%}
-          {%- assign first_page = false -%}
-        {%- else -%}
-          ,
-        {%- endif -%}
-
-        { "title": {{ title }}, "url": {{ url_json }}, "date": {{ date }} }
-
-        {%- assign seen_urls = seen_urls | append: "|" | append: url | append: "|" -%}
-      {%- endunless -%}
-    {%- endfor -%}
-  ]
-{%- endfor -%}
-}
+    {%- assign tag_pages = tag_pages | sort: "date" | re
