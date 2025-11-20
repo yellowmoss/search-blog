@@ -9,11 +9,16 @@ permalink: /search.json
 {%- for coll in site.collections -%}
   {%- for page in coll.docs -%}
 
-    {%- unless first -%},{%- endunless -%}
-    {%- assign first = false -%}
+    {%- if first -%}
+      {%- assign first = false -%}
+    {%- else -%}
+      ,
+    {%- endif -%}
 
     {
-      "title": {{ page.title | jsonify }}
+      "title": {{ page.title | jsonify }},
+      "url": {{ page.url | relative_url | jsonify }},
+      "description": {{ page.description | default:page.excerpt | jsonify }}
     }
 
   {%- endfor -%}
