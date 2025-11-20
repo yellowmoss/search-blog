@@ -11,14 +11,15 @@ layout: null
   {% endif %}
 {% endfor %}
 
-{% assign unique_sorted_tags = all_tags | uniq | sort %}
-
-
-
 
 
 [{
 
-{{ unique_sorted_tags | json }}
+{{ all_tags | json }}
 
 }]
+
+
+
+
+{% assign unique_sorted_tags = all_tags | uniq | sort %}
