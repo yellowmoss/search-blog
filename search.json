@@ -3,45 +3,45 @@ layout: none
 permalink: /search.json
 ---
 
-[
-{%- assign tag_map = "" | split: "" -%}
+{
+  "DEBUG_STEP_1_all_pages_collected": 
+    {%- comment -%} Collect pages from pages, posts, and other collections {%- endcomment -%}
+    {%- assign all_pages = site.pages | concat: site.posts -%}
+    {%- for coll in site.collections -%}
+      {%- unless coll.label == "posts" -%}
+        {%- assign all_pages = all_pages | concat: coll.docs -%}
+      {%- endunless -%}
+    {%- endfor -%}
+    {{ all_pages | jsonify }},
 
-{%- comment %}
-  STEP 1: Gather pages from:
-  - site.pages
-  - any collections (like posts, notes, etc)
-{%- endcomment %}
+  "DEBUG_STEP_2_build_tag_map":
+    {%- comment -%} Build tag→pages mapping {%- endcomment -%}
+    {%- assign tag_map = {} -%}
+    {%- for p in all_pages -%}
+      {%- if p.tags -%}
+        {%- for t in p.tags -%}
+          {%- assign key = t | downcase -%}
+          {%- if tag_map[key] -%}
+            {%- assign tmp = tag_map[key] | push: p -%}
+            {%- assign tag_map = tag_map | merge: {{ key }}: tmp -%}
+          {%- else -%}
+            {%- assign tmp = "" | split: "" | push: p -%}
+            {%- assign tag_map = tag_map | merge: {{ key }}: tmp -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+    {%- endfor -%}
+    {{ tag_map | jsonify }},
 
-{%- assign all_pages = site.collections | concat: site.posts | site.pages -%}
+  "DEBUG_STEP_3_sorted_tags":
+    {%- assign sorted_tags = tag_map | keys | sort -%}
+    {{ sorted_tags | jsonify }},
 
-{%- for coll in site.collections %}
-  {%- unless coll.label == "posts" %}
-    {%- if item.tags -%}
-      {%- assign all_tags = all_tags | concat: item.tags -%}
-    {%- endif -%}
-  {%- endunless %}
-{%- endfor %}
-
-{%- comment %}
-  STEP 2: Build a tag → pages map
-{%- endcomment %}
-
-{%- assign tag_map = {} -%}
-
-{%- for p in all_pages %}
-  {%- if p.tags %}
-    {%- for t in p.tags %}
-      {%- assign t_lower = t | downcase -%}
-
-      {%- if tag_map[t_lower] %}
-        {%- assign existing = tag_map[t_lower] -%}
-        {%- assign existing = existing | push: p -%}
-        {%- assign tag_map = tag_map | merge: {{ t_lower }}: existing -%}
-      {%- else %}
-        {%- assign arr = "" | split: "" | push: p -%}
-        {%- assign tag_map = tag_map | merge: {{ t_lower }}: arr -%}
-      {%- endif %}
-    {%- endfor %}
-  {%- endif %}
-{%- endfor %}
-{{ tag_map[0] | json }}
+  "DEBUG_STEP_4_pages_per_tag_sorted":
+    {
+      {%- for tag in sorted_tags -%}
+        {%- assign arr = tag_map[tag] | sort: "date" | reverse -%}
+        "{{ tag }}": {{ arr | jsonify }}{%- unless forloop.last -%},{%- endunless -%}
+      {%- endfor -%}
+    }
+}
