@@ -4,9 +4,12 @@ permalink: /search.json
 ---
 
 {%- assign tag_keys = "" | split: "" -%}
+{%- assign tag_strings = "" | split: "" -%}
 
 {%- comment -%}
-Use capture to store JSON strings per tag
+Step 1: iterate all collections and pages
+Step 2: for each page with tags, build JSON string for each tag
+Step 3: accumulate strings in tag_strings, one string per tag key
 {%- endcomment -%}
 
 {%- for coll in site.collections -%}
@@ -16,26 +19,23 @@ Use capture to store JSON strings per tag
       {%- assign title = page.title | jsonify -%}
       {%- assign url   = page.url | relative_url | jsonify -%}
       {%- assign date  = page.date | date_to_xmlschema | jsonify -%}
-
-      {%- assign temp = '{"title":' | append: title |
-                        ', "url":' | append: url |
-                        ', "date":' | append: date |
-                        '}' -%}
+      {%- assign temp  = '{"title":' | append: title | append:',"url":' | append: url | append:',"date":' | append: date | append:'}' -%}
 
       {%- for tag in page.tags -%}
         {%- assign key = tag | downcase -%}
 
-        {%- comment -%} Add tag to list if new {%- endcomment -%}
         {%- unless tag_keys contains key -%}
           {%- assign tag_keys = tag_keys | push: key -%}
+          {%- assign tag_strings = tag_strings | push: "" -%}
         {%- endunless -%}
 
-        {%- comment -%} Capture/accumulate temp JSON for each tag {%- endcomment -%}
-        {%- capture tag_content -%}
-          {{ site[key] | default: "" }}{% unless site[key] == "" %}||{% endunless %}{{ temp }}
-        {%- endcapture -%}
-
-        {%- assign site = site | merge: {{ key }}: tag_content -%}
+        {%- assign idx = tag_keys | index_of: key -%}
+        {%- assign current = tag_strings[idx] -%}
+        {%- if current != "" -%}
+          {%- assign current = current | append: "||" -%}
+        {%- endif -%}
+        {%- assign current = current | append: temp -%}
+        {%- assign tag_strings = tag_strings | replace_at: idx, current -%}
 
       {%- endfor -%}
 
@@ -45,11 +45,12 @@ Use capture to store JSON strings per tag
 
 {%- assign tag_keys = tag_keys | sort -%}
 
+{%- comment -%} Step 4: Output JSON {%- endcomment -%}
 {
 {%- assign first_tag = true -%}
-
 {%- for tag in tag_keys -%}
-  {%- assign raw = site[tag] | default: "" -%}
+  {%- assign idx = tag_keys | index_of: tag -%}
+  {%- assign raw = tag_strings[idx] -%}
   {%- assign items = raw | split: "||" -%}
   {%- assign items = items | sort: "date" | reverse -%}
 
