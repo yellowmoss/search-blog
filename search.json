@@ -3,10 +3,6 @@ layout: none
 permalink: /search.json
 ---
 
-{
-  "DEBUG_STEP_1_all_pages_collected": 
-    {%- for coll in site.collections -%}
-      {%- assign all_pages = all_pages | concat: coll.docs -%}
-    {%- endfor -%}
-    {{ all_pages | jsonify }}
-}
+{%- for coll in site.collections -%}
+  {%- assign all_pages = all_pages | concat: coll.docs -%}
+{%- endfor -%}
