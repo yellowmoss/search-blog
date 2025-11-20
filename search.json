@@ -5,12 +5,8 @@ permalink: /search.json
 
 {
   "DEBUG_STEP_1_all_pages_collected": 
-    {%- comment -%} Collect pages from pages, posts, and other collections {%- endcomment -%}
-    {%- assign all_pages = site.pages | concat: site.posts -%}
     {%- for coll in site.collections -%}
-      {%- unless coll.label == "posts" -%}
-        {%- assign all_pages = all_pages | concat: coll.docs -%}
-      {%- endunless -%}
+      {%- assign all_pages = all_pages | concat: coll.docs -%}
     {%- endfor -%}
     {{ all_pages | jsonify }}
 }
