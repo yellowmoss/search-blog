@@ -4,9 +4,19 @@ permalink: /search.json
 ---
 
 [
+{%- assign first = true -%}
+
 {%- for coll in site.collections -%}
   {%- for page in coll.docs -%}
-    { "title": {{ page.title }} },
+
+    {%- unless first -%},{%- endunless -%}
+    {%- assign first = false -%}
+
+    {
+      "title": {{ page.title | jsonify }}
+    }
+
   {%- endfor -%}
 {%- endfor -%}
+
 ]
