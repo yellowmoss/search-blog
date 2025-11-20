@@ -2,18 +2,5 @@
 layout: null
 ---
 
-[
+{{ site.collections | json }}
 
-{% for name in site.collections %}
-
-{% for item in site.{{ name }} %}
-
-   {% {{item}} | json %}
-
-{% endfor %}
-
-
-
-{% endfor %}
-
-]

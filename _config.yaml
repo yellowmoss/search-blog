@@ -10,13 +10,14 @@ baseurl: "multiblog"
 #
 url: "https://yellowmoss.github.io"
 
+#
+collections_dir: my_collections
+
 # 
 collections:
-   posts:
-      output: true
    articles:
-      output: false
+      output: true
    news:
-      output: false
+      output: true
    links:
       output: true
