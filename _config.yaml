@@ -18,17 +18,3 @@ collections:
       output: true
    links:
       output: true
-
-
-# DO NOT EDIT BELOW THIS LINE
-
-#
-#defaults:
-#  - scope:
-#      path: "search"
-#    values:
-#      layout: null
-
-#
-#include:
-#  - search/search.json
