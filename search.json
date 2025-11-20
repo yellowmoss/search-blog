@@ -12,22 +12,24 @@ layout: null
 2. Gather all documents from all collections.
 {% endcomment %}
 {%- for collection in site.collections -%}
-  {% assign docs = docs | concat: collection.docs %}
+  {% comment %} Use default:array to prevent the "Cannot sort a null object" error {% endcomment %}
+  {% assign docs = docs | concat: collection.docs | default: array %}
 {%- endfor -%}
 
 {% comment %}
 3. Iterate through all documents to build the tag_index object.
-   For each document, iterate through its 'tags' array.
+   For EACH document, iterate through its 'tags' array.
 {% endcomment %}
 {%- for item in docs -%}
   {%- for tag in item.tags -%}
     {% comment %}
-    4. If the tag doesn't exist as a key in tag_index, create it with the current document in an array.
-    5. If the tag exists, append the current document to its array of documents.
+    4. If the tag is seen for the first time, create a new list for it.
+    5. Otherwise, append the current document to the existing tag list.
     {% endcomment %}
     {% if tag_index[tag] == null %}
       {% assign tag_index = tag_index | merge: tag: item | array_wrap %}
     {% else %}
+      {% comment %} Push the document onto the list for this tag {% endcomment %}
       {% assign current_docs = tag_index[tag] | push: item %}
       {% assign tag_index = tag_index | merge: tag: current_docs %}
     {% endif %}
@@ -35,7 +37,7 @@ layout: null
 {%- endfor -%}
 
 {% comment %}
-6. Output the final JSON object. We iterate over the sorted keys (tags) of the tag_index object.
+6. Output the final JSON object, iterating over the sorted list of UNIQUE tag names.
 {% endcomment %}
 {
   "tags": [
