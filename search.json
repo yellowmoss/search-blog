@@ -2,60 +2,22 @@
 layout: null
 ---
 
-{% comment %}
-1. Initialize an empty array for all documents and an empty object for the tag index.
-{% endcomment %}
 {% assign docs = "" | split: "" %}
 {% assign tag_index = {} %}
 
-{% comment %}
-2. Gather all documents from all collections.
-{% endcomment %}
 {%- for collection in site.collections -%}
-  {% comment %} Use default:array to prevent the "Cannot sort a null object" error {% endcomment %}
   {% assign docs = docs | concat: collection.docs | default: array %}
 {%- endfor -%}
 
-{% comment %}
-3. Iterate through all documents to build the tag_index object.
-   For EACH document, iterate through its 'tags' array.
-{% endcomment %}
 {%- for item in docs -%}
   {%- for tag in item.tags -%}
-    {% comment %}
-    4. If the tag is seen for the first time, create a new list for it.
-    5. Otherwise, append the current document to the existing tag list.
-    {% endcomment %}
     {% if tag_index[tag] == null %}
       {% assign tag_index = tag_index | merge: tag: item | array_wrap %}
     {% else %}
-      {% comment %} Push the document onto the list for this tag {% endcomment %}
       {% assign current_docs = tag_index[tag] | push: item %}
       {% assign tag_index = tag_index | merge: tag: current_docs %}
     {% endif %}
   {%- endfor -%}
 {%- endfor -%}
 
-{% comment %}
-6. Output the final JSON object, iterating over the sorted list of UNIQUE tag names.
-{% endcomment %}
-{
-  "tags": [
-    {%- assign sorted_tags = tag_index | keys | sort -%}
-    {%- for tag in sorted_tags -%}
-      {
-        "tag": {{ tag | jsonify }},
-        "documents": [
-          {%- assign documents = tag_index[tag] -%}
-          {%- for item in documents -%}
-            {
-              "title": {{ item.title | jsonify }},
-              "url": {{ item.url | relative_url | jsonify }},
-              "collection": {{ item.collection | jsonify }}
-            }{% unless forloop.last %},{% endunless %}
-          {%- endfor -%}
-        ]
-      }{% unless forloop.last %},{% endunless %}
-    {%- endfor -%}
-  ]
-}
+[{"title":"banana"},{"species":"giant herb"}]
