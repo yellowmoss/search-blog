@@ -2,21 +2,58 @@
 layout: null
 ---
 
-[
+{% comment %}
+1. Initialize an empty array for all documents and an empty object for the tag index.
+{% endcomment %}
 {% assign docs = "" | split: "" %}
+{% assign tag_index = {} %}
 
+{% comment %}
+2. Gather all documents from all collections.
+{% endcomment %}
 {%- for collection in site.collections -%}
   {% assign docs = docs | concat: collection.docs %}
 {%- endfor -%}
 
-{%- assign sorted = docs | sort: "tags" -%}
-
-{%- for item in sorted -%}
-{
-  "title": {{ item.title | jsonify }},
-  "url": {{ item.url | relative_url | jsonify }},
-  "tags": {{ item.tags | jsonify }},
-  "collection": {{ item.collection | jsonify }},
-}{% unless forloop.last %},{% endunless %}
+{% comment %}
+3. Iterate through all documents to build the tag_index object.
+   For each document, iterate through its 'tags' array.
+{% endcomment %}
+{%- for item in docs -%}
+  {%- for tag in item.tags -%}
+    {% comment %}
+    4. If the tag doesn't exist as a key in tag_index, create it with the current document in an array.
+    5. If the tag exists, append the current document to its array of documents.
+    {% endcomment %}
+    {% if tag_index[tag] == null %}
+      {% assign tag_index = tag_index | merge: tag: item | array_wrap %}
+    {% else %}
+      {% assign current_docs = tag_index[tag] | push: item %}
+      {% assign tag_index = tag_index | merge: tag: current_docs %}
+    {% endif %}
+  {%- endfor -%}
 {%- endfor -%}
-]
+
+{% comment %}
+6. Output the final JSON object. We iterate over the sorted keys (tags) of the tag_index object.
+{% endcomment %}
+{
+  "tags": [
+    {%- assign sorted_tags = tag_index | keys | sort -%}
+    {%- for tag in sorted_tags -%}
+      {
+        "tag": {{ tag | jsonify }},
+        "documents": [
+          {%- assign documents = tag_index[tag] -%}
+          {%- for item in documents -%}
+            {
+              "title": {{ item.title | jsonify }},
+              "url": {{ item.url | relative_url | jsonify }},
+              "collection": {{ item.collection | jsonify }}
+            }{% unless forloop.last %},{% endunless %}
+          {%- endfor -%}
+        ]
+      }{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+  ]
+}
