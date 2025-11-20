@@ -35,12 +35,13 @@ permalink: /search.json
 
   "{{ tag }}": [
     {%- assign first_page = true -%}
-    {%- assign seen_urls = "" | split: "" -%}
+    {%- assign seen_urls_str = "" -%} {# Track duplicates using a delimiter-separated string #}
 
     {%- for page in all_pages -%}
       {%- if page.tags contains tag -%}
         {%- assign url = page.url | relative_url -%}
-        {%- unless seen_urls contains url -%}
+        {%- assign delimiter = "||" -%}
+        {%- unless seen_urls_str contains delimiter | append: url | append: delimiter -%}
 
           {%- assign title = page.title | jsonify -%}
           {%- assign url_json = url | jsonify -%}
@@ -54,7 +55,7 @@ permalink: /search.json
 
           { "title": {{ title }}, "url": {{ url_json }}, "date": {{ date }} }
 
-          {%- assign seen_urls = seen_urls | push: url -%}
+          {%- assign seen_urls_str = seen_urls_str | append: delimiter | append: url | append: delimiter -%}
         {%- endunless -%}
       {%- endif -%}
     {%- endfor -%}
