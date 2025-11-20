@@ -10,7 +10,4 @@ layout: null
 {%- endfor -%}
 
 
-[{
-{{ docs | json }}
-
-}]
+[{"title":"banana"},{"species":"giant herb"}]
