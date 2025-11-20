@@ -3,57 +3,28 @@ layout: none
 permalink: /search.json
 ---
 
-{%- assign tag_keys = "" | split: "" -%}
-{%- assign tag_strings = "" | split: "" -%}
+{%- assign all_tags = "" | split: "" -%}
 
-{%- comment -%}
-Step 1: iterate all collections and pages
-Step 2: for each page with tags, build JSON string for each tag
-Step 3: accumulate strings in tag_strings, one string per tag key
-{%- endcomment -%}
-
+{%- comment -%} Collect all tags from all collections {%- endcomment -%}
 {%- for coll in site.collections -%}
   {%- for page in coll.docs -%}
     {%- if page.tags -%}
-
-      {%- assign title = page.title | jsonify -%}
-      {%- assign url   = page.url | relative_url | jsonify -%}
-      {%- assign date  = page.date | date_to_xmlschema | jsonify -%}
-      {%- assign temp  = '{"title":' | append: title | append:',"url":' | append: url | append:',"date":' | append: date | append:'}' -%}
-
       {%- for tag in page.tags -%}
-        {%- assign key = tag | downcase -%}
-
-        {%- unless tag_keys contains key -%}
-          {%- assign tag_keys = tag_keys | push: key -%}
-          {%- assign tag_strings = tag_strings | push: "" -%}
+        {%- assign tag_down = tag | downcase -%}
+        {%- unless all_tags contains tag_down -%}
+          {%- assign all_tags = all_tags | push: tag_down -%}
         {%- endunless -%}
-
-        {%- assign idx = tag_keys | index_of: key -%}
-        {%- assign current = tag_strings[idx] -%}
-        {%- if current != "" -%}
-          {%- assign current = current | append: "||" -%}
-        {%- endif -%}
-        {%- assign current = current | append: temp -%}
-        {%- assign tag_strings = tag_strings | replace_at: idx, current -%}
-
       {%- endfor -%}
-
     {%- endif -%}
   {%- endfor -%}
 {%- endfor -%}
 
-{%- assign tag_keys = tag_keys | sort -%}
+{%- assign all_tags = all_tags | sort -%}
 
-{%- comment -%} Step 4: Output JSON {%- endcomment -%}
+{%- comment -%} Output JSON {%- endcomment -%}
 {
 {%- assign first_tag = true -%}
-{%- for tag in tag_keys -%}
-  {%- assign idx = tag_keys | index_of: tag -%}
-  {%- assign raw = tag_strings[idx] -%}
-  {%- assign items = raw | split: "||" -%}
-  {%- assign items = items | sort: "date" | reverse -%}
-
+{%- for tag in all_tags -%}
   {%- if first_tag -%}
     {%- assign first_tag = false -%}
   {%- else -%}
@@ -61,8 +32,23 @@ Step 3: accumulate strings in tag_strings, one string per tag key
   {%- endif -%}
 
   "{{ tag }}": [
-    {%- for item in items -%}
-      {{ item }}{%- unless forloop.last %},{% endunless %}
+    {%- assign first_page = true -%}
+    {%- for coll in site.collections -%}
+      {%- for page in coll.docs -%}
+        {%- if page.tags contains tag -%}
+          {%- assign title = page.title | jsonify -%}
+          {%- assign url   = page.url | relative_url | jsonify -%}
+          {%- assign date  = page.date | date_to_xmlschema | jsonify -%}
+
+          {%- if first_page -%}
+            {%- assign first_page = false -%}
+          {%- else -%}
+            ,
+          {%- endif -%}
+
+          { "title": {{ title }}, "url": {{ url }}, "date": {{ date }} }
+        {%- endif -%}
+      {%- endfor -%}
     {%- endfor -%}
   ]
 {%- endfor -%}
