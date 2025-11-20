@@ -3,13 +3,10 @@ layout: none
 permalink: /search.json
 ---
 
-{
-
+[
 {%- for coll in site.collections -%}
   {%- for page in coll.docs -%}
-
-    "title": {{ page.title }},
-
+    { "title": {{ page.title }} },
   {%- endfor -%}
 {%- endfor -%}
-}
+]
