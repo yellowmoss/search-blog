@@ -4,15 +4,11 @@ permalink: /search.json
 ---
 
 {
-{%- assign first_item = true -%}
 
 {%- for coll in site.collections -%}
   {%- for page in coll.docs -%}
 
-    {%- unless first_item -%},{%- endunless -%}
-    {%- assign first_item = false -%}
-
-    "title": {{ page.title | jsonify }}
+    "title": {{ page.title }},
 
   {%- endfor -%}
 {%- endfor -%}
