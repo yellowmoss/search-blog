@@ -12,7 +12,7 @@ permalink: /search.json
   - any collections (like posts, notes, etc)
 {%- endcomment %}
 
-{%- assign all_pages = site.pages | concat: site.posts -%}
+{%- assign all_pages = site.collections | concat: site.posts | site.pages -%}
 
 {%- for coll in site.collections %}
   {%- unless coll.label == "posts" %}
@@ -44,31 +44,4 @@ permalink: /search.json
     {%- endfor %}
   {%- endif %}
 {%- endfor %}
-
-{%- comment %}
-  STEP 3: Sort tags alphabetically
-{%- endcomment %}
-{%- assign sorted_tags = tag_map | keys | sort -%}
-
-{%- comment %}
-  STEP 4: Output JSON
-{%- endcomment %}
-
-{%- for tag in sorted_tags %}
-  {%- assign pages = tag_map[tag] | sort: "date" | reverse %}
-
-  {
-    "tag": "{{ tag }}",
-    "pages": [
-      {%- for p in pages -%}
-      {
-        "url": "{{ p.url | relative_url }}",
-        "date": "{{ p.date | date_to_xmlschema }}",
-        "title": {{ p.title | jsonify }},
-        "description": {{ p.description | default:p.excerpt | jsonify }}
-      }{%- if forloop.last == false %},{% endif %}
-      {%- endfor %}
-    ]
-  }{%- if forloop.last == false %},{% endif %}
-{%- endfor %}
-]
+{{ tag_map | json }}
