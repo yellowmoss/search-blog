@@ -12,36 +12,5 @@ permalink: /search.json
         {%- assign all_pages = all_pages | concat: coll.docs -%}
       {%- endunless -%}
     {%- endfor -%}
-    {{ all_pages | jsonify }},
-
-  "DEBUG_STEP_2_build_tag_map":
-    {%- comment -%} Build tag→pages mapping {%- endcomment -%}
-    {%- assign tag_map = {} -%}
-    {%- for p in all_pages -%}
-      {%- if p.tags -%}
-        {%- for t in p.tags -%}
-          {%- assign key = t | downcase -%}
-          {%- if tag_map[key] -%}
-            {%- assign tmp = tag_map[key] | push: p -%}
-            {%- assign tag_map = tag_map | merge: {{ key }}: tmp -%}
-          {%- else -%}
-            {%- assign tmp = "" | split: "" | push: p -%}
-            {%- assign tag_map = tag_map | merge: {{ key }}: tmp -%}
-          {%- endif -%}
-        {%- endfor -%}
-      {%- endif -%}
-    {%- endfor -%}
-    {{ tag_map | jsonify }},
-
-  "DEBUG_STEP_3_sorted_tags":
-    {%- assign sorted_tags = tag_map | keys | sort -%}
-    {{ sorted_tags | jsonify }},
-
-  "DEBUG_STEP_4_pages_per_tag_sorted":
-    {
-      {%- for tag in sorted_tags -%}
-        {%- assign arr = tag_map[tag] | sort: "date" | reverse -%}
-        "{{ tag }}": {{ arr | jsonify }}{%- unless forloop.last -%},{%- endunless -%}
-      {%- endfor -%}
-    }
+    {{ all_pages | jsonify }}
 }
