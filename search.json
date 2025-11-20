@@ -3,49 +3,17 @@ layout: none
 permalink: /search.json
 ---
 
-{%- assign tag_map = {} -%}
-{%- assign all_pages = site.pages -%}
+{
+{%- assign first_item = true -%}
 
 {%- for coll in site.collections -%}
-  {%- unless coll.label == "posts" -%}
-    {%- assign all_pages = all_pages | concat: coll.docs -%}
-  {%- endunless -%}
+  {%- for page in coll.docs -%}
+
+    {%- unless first_item -%},{%- endunless -%}
+    {%- assign first_item = false -%}
+
+    "title": {{ page.title | jsonify }}
+
+  {%- endfor -%}
 {%- endfor -%}
-
-{{ all_pages | json }}
-
-
-
-
-
-
-{%- for p in all_pages -%}
-  {%- if p.tags -%}
-
-    {%- assign url = p.url | relative_url -%}
-    {%- assign title = p.title | jsonify -%}
-    {%- assign desc = p.description | default:p.excerpt | jsonify -%}
-
-    {%- assign page_obj = 
-      '{"url":"'
-      | append: url
-      | append: '","title":'
-      | append: title
-      | append: ',"description":'
-      | append: desc
-      | append: '}'
-    -%}
-
-    {%- for tag in p.tags -%}
-      {%- assign key = tag | downcase -%}
-
-      {%- if tag_map[key] %}
-        {%- assign arr = tag_map[key] | append: "||" | append: page_obj -%}
-        {%- assign tag_map = tag_map | merge: {{ key }}: arr -%}
-      {%- else %}
-        {%- assign tag_map = tag_map | merge: {{ key }}: page_obj -%}
-      {%- endif %}
-    {%- endfor -%}
-
-  {%- endif -%}
-{%- endfor -%}
+}
