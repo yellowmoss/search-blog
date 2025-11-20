@@ -1,24 +1,74 @@
 ---
-layout: null
+layout: none
 permalink: /search.json
 ---
-{%- assign all_tags = "" | split: "" -%}
-{%- for collection in site.collections -%}
-  {%- for item in collection.docs -%}
+
+[
+{%- assign tag_map = "" | split: "" -%}
+
+{%- comment %}
+  STEP 1: Gather pages from:
+  - site.pages
+  - any collections (like posts, notes, etc)
+{%- endcomment %}
+
+{%- assign all_pages = site.pages | concat: site.posts -%}
+
+{%- for coll in site.collections %}
+  {%- unless coll.label == "posts" %}
     {%- if item.tags -%}
       {%- assign all_tags = all_tags | concat: item.tags -%}
     {%- endif -%}
-  {%- endfor -%}
-{%- endfor -%}
-{%- assign unique_sorted_tags = all_tags | uniq | sort -%}
-[
+  {%- endunless %}
+{%- endfor %}
+
+{%- comment %}
+  STEP 2: Build a tag → pages map
+{%- endcomment %}
+
+{%- assign tag_map = {} -%}
+
+{%- for p in all_pages %}
+  {%- if p.tags %}
+    {%- for t in p.tags %}
+      {%- assign t_lower = t | downcase -%}
+
+      {%- if tag_map[t_lower] %}
+        {%- assign existing = tag_map[t_lower] -%}
+        {%- assign existing = existing | push: p -%}
+        {%- assign tag_map = tag_map | merge: {{ t_lower }}: existing -%}
+      {%- else %}
+        {%- assign arr = "" | split: "" | push: p -%}
+        {%- assign tag_map = tag_map | merge: {{ t_lower }}: arr -%}
+      {%- endif %}
+    {%- endfor %}
+  {%- endif %}
+{%- endfor %}
+
+{%- comment %}
+  STEP 3: Sort tags alphabetically
+{%- endcomment %}
+{%- assign sorted_tags = tag_map | keys | sort -%}
+
+{%- comment %}
+  STEP 4: Output JSON
+{%- endcomment %}
+
+{%- for tag in sorted_tags %}
+  {%- assign pages = tag_map[tag] | sort: "date" | reverse %}
+
   {
-    "tag": "{{ unique_sorted_tags[0] }}"
-  },
-  {
-    "tag": "{{ unique_sorted_tags[1] }}"
-  },
-  {
-    "tag": "{{ unique_sorted_tags[2] }}"
-  }
+    "tag": "{{ tag }}",
+    "pages": [
+      {%- for p in pages -%}
+      {
+        "url": "{{ p.url | relative_url }}",
+        "date": "{{ p.date | date_to_xmlschema }}",
+        "title": {{ p.title | jsonify }},
+        "description": {{ p.description | default:p.excerpt | jsonify }}
+      }{%- if forloop.last == false %},{% endif %}
+      {%- endfor %}
+    ]
+  }{%- if forloop.last == false %},{% endif %}
+{%- endfor %}
 ]
