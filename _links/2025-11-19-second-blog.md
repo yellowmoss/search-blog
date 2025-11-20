@@ -3,7 +3,7 @@ layout: default
 title: "Second Post"
 date: 2025-11-19
 permalink: second-post
-tags: [second, football, england]
+tags:
 ---
 bla bla bla bla this is my first post bla bla 
 
