@@ -2,17 +2,13 @@
 layout: null
 permalink: /search.json
 ---
-
 {%- assign all_tags = "" | split: "" -%}
-
-{% for collection in site.collections %}
-  {% for item in collection.docs %}
-    {% assign all_tags = all_tags | concat: item.tags %}
-  {% endfor %}
-{% endfor %}
-
-{% assign unique_sorted_tags = all_tags | uniq | sort %}
-
+{%- for collection in site.collections -%}
+  {%- for item in collection.docs -%}
+    {%- assign all_tags = all_tags | concat: item.tags -%}
+  {%- endfor -%}
+{%- endfor -%}
+{%- assign unique_sorted_tags = all_tags | uniq | sort -%}
 [
   {
     "tag": {{ unique_sorted_tags[0] }}
